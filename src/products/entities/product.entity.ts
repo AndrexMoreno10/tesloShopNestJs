@@ -1,6 +1,5 @@
 // simulamos la tabla product 
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { BeforeUpdate } from "typeorm/browser";
+import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Product {
