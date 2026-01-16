@@ -9,6 +9,7 @@ import { PaginationDto } from '../common/dtos/pagination.dto';
 // import { validate as isUUID } from 'uuid'
 import isUUID from 'validator/lib/isUUID';
 import { ProductImage } from './entities/product-image.entity';
+import { User } from 'src/auth/entities/user.entity';
 
 
 @Injectable()
@@ -29,14 +30,15 @@ export class ProductsService {
 
   }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, user: User) {
 
     try {
       const { images = [], ...productDetails } = createProductDto;
 
       const product = this.productRepository.create({
         ...productDetails,
-        images: images.map(image => this.productImageRepository.create({ url: image })) // Mapeamos las imagenes para crear instancias de ProductImage
+        images: images.map(image => this.productImageRepository.create({ url: image })), // Mapeamos las imagenes para crear instancias de ProductImage
+        user, // Asociamos el usuario que crea el producto
       });
       await this.productRepository.save(product);
       return { ...product, images };
@@ -105,7 +107,7 @@ export class ProductsService {
   }
 
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, user: User) {
 
     const { images, ...toUpdate } = updateProductDto;
 
@@ -133,7 +135,8 @@ export class ProductsService {
         product.images = images.map(
           image => this.productImageRepository.create({ url: image })
         );
-      } 
+      }
+      product.user = user; // Actualizamos el usuario que hizo la modificacion
 
       await queryRunner.manager.save(product); // Guardamos el producto actualizado usando el queryRunner
       await queryRunner.commitTransaction(); // Hacemos commit de la transaccion
@@ -184,5 +187,5 @@ export class ProductsService {
   }
 
 
-  
+
 }
